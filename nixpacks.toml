@@ -1,0 +1,14 @@
+# LaLa's Take Away - Railway Deployment Config
+# Nixpacks: https://nixpacks.com/docs
+
+[phases.setup]
+nixPkgs = ["nodejs"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm start"
