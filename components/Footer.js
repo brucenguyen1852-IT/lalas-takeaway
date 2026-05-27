@@ -26,7 +26,7 @@ export default function Footer() {
               fontWeight: 400,
               marginBottom: 'var(--sp-16)',
             }}>
-              {settings.site_name || 'LaLa's Take Away'}
+              {settings.site_name || "LaLa's Take Away"}
             </h3>
             <p style={{ fontSize: 'var(--fs-body)', lineHeight: 'var(--lh-body)' }}>
               {settings.site_description || 'Ẩm thực Việt Nam truyền thống'}
@@ -64,7 +64,7 @@ export default function Footer() {
           fontSize: 'var(--fs-caption)',
           color: 'var(--medium-gray)',
         }}>
-          © {new Date().getFullYear()} {settings.site_name || 'LaLa's Take Away'}. Tất cả quyền được bảo lưu.
+          © {new Date().getFullYear()} {settings.site_name || "LaLa's Take Away"}. Tất cả quyền được bảo lưu.
         </div>
       </div>
     </footer>

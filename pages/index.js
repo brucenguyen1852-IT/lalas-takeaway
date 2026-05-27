@@ -103,7 +103,7 @@ export default function Home() {
               color: 'var(--charcoal-black)',
               marginBottom: 'var(--sp-16)',
             }}>
-              {settings.site_name || 'LaLa's Take Away'}
+              {settings.site_name || "LaLa's Take Away"}
             </h1>
             <p style={{
               fontSize: 'var(--fs-body-lg)',

@@ -36,9 +36,9 @@ export default function Header() {
           textDecoration: 'none',
         }}>
           {settings.logo ? (
-            <img src={settings.logo} alt={settings.site_name || 'LaLa's Take Away'} style={{ height: '40px', width: 'auto' }} />
+            <img src={settings.logo} alt={settings.site_name || "LaLa's Take Away"} style={{ height: '40px', width: 'auto' }} />
           ) : (
-            settings.site_name || 'LaLa's Take Away'
+            settings.site_name || "LaLa's Take Away"
           )}
         </Link>
 
