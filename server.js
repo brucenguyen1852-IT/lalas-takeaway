@@ -37,10 +37,10 @@ const data = db.getDb();
 // Seed default settings if empty
 const defaults = [
   ['site_name', "LaLa's Take Away"],
-  ['site_description', 'Ẩm thực Việt Nam truyền thống'],
-  ['address', '123 Đường ABC, Quận 1, TP. Hồ Chí Minh'],
+  ['site_description', 'Authentic Vietnamese Cuisine'],
+  ['address', '123 Main Street, District 1, Ho Chi Minh City'],
   ['phone', '0900 123 456'],
-  ['currency', 'VNĐ'],
+  ['currency', 'VND'],
   ['currency_symbol', '₫'],
 ];
 for (const [k, v] of defaults) {

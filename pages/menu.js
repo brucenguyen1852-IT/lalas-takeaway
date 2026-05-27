@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import ProductCard from '../components/ProductCard';
-import CategoryNav from '../components/CategoryNav';
 
 export default function Menu() {
   const router = useRouter();
@@ -21,13 +20,9 @@ export default function Menu() {
         const [cData, mData] = await Promise.all([cRes.json(), mRes.json()]);
         setCategories(Array.isArray(cData) ? cData : []);
         setMenuItems(Array.isArray(mData) ? mData : []);
-
-        // Check for category query param
-        if (router.query.category) {
-          setActiveCategory(parseInt(router.query.category));
-        }
+        if (router.query.category) setActiveCategory(parseInt(router.query.category));
       } catch (e) {
-        console.error('Failed to load menu:', e);
+        console.error(e);
       } finally {
         setLoading(false);
       }
@@ -36,83 +31,100 @@ export default function Menu() {
   }, [router.query.category]);
 
   const filteredItems = menuItems.filter(item => {
-    const matchCategory = !activeCategory || item.category_id === activeCategory;
+    const matchCat = !activeCategory || item.category_id === activeCategory;
     const matchSearch = !search ||
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       (item.description && item.description.toLowerCase().includes(search.toLowerCase()));
-    return matchCategory && matchSearch;
+    return matchCat && matchSearch;
   });
 
   if (loading) {
-    return (
-      <div className="flex-center" style={{ height: '60vh' }}>
-        <div className="spinner" />
-      </div>
-    );
+    return <div className="flex-center" style={{ height: '60vh' }}><div className="spinner" /></div>;
   }
 
   return (
-    <div className="container" style={{ paddingTop: 'var(--sp-32)', paddingBottom: 'var(--sp-56)' }}>
-      <h1 className="section-title">Thực đơn</h1>
-
+    <div style={{ paddingTop: 'var(--sp-base)', paddingBottom: 'var(--sp-2xl)' }}>
       {/* Search */}
-      <div style={{ position: 'relative', marginBottom: 'var(--sp-24)', maxWidth: '400px' }}>
+      <div className="container" style={{ position: 'relative', marginBottom: 'var(--sp-base)' }}>
         <input
           type="text"
           className="search-input"
-          placeholder="Tìm món..."
+          placeholder="Search dishes..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: '100%', paddingRight: '40px' }}
         />
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--lighter-gray)"
-          strokeWidth="2"
-          style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)' }}
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
+        <span style={{ position: 'absolute', right: '28px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'var(--color-text-muted)' }}>
+          🔍
+        </span>
       </div>
 
-      {/* Category Filter */}
-      {categories.length > 0 && (
-        <CategoryNav
-          categories={categories}
-          activeId={activeCategory}
-          onSelect={setActiveCategory}
-        />
-      )}
-
-      {/* Results count */}
-      <p style={{
-        fontSize: 'var(--fs-caption)',
-        color: 'var(--medium-gray)',
-        marginBottom: 'var(--sp-16)',
-      }}>
-        {filteredItems.length} món
-        {activeCategory && ` trong danh mục "${categories.find(c => c.id === activeCategory)?.name}"`}
-      </p>
-
-      {/* Menu Grid */}
-      {filteredItems.length > 0 ? (
-        <div className="grid-4">
-          {filteredItems.map(item => (
-            <ProductCard key={item.id} item={item} />
+      {/* Category chips */}
+      <div className="container">
+        <div style={{
+          display: 'flex', gap: 'var(--sp-sm)', overflowX: 'auto',
+          padding: 'var(--sp-sm) 0 var(--sp-base)', WebkitOverflowScrolling: 'touch',
+        }}>
+          <button
+            onClick={() => setActiveCategory(null)}
+            style={{
+              ...chipStyle,
+              background: !activeCategory ? 'var(--color-primary)' : 'var(--color-surface)',
+              color: !activeCategory ? 'white' : 'var(--color-text)',
+              border: !activeCategory ? 'none' : '1px solid var(--color-border)',
+            }}
+          >
+            All
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              style={{
+                ...chipStyle,
+                background: activeCategory === cat.id ? 'var(--color-primary)' : 'var(--color-surface)',
+                color: activeCategory === cat.id ? 'white' : 'var(--color-text)',
+                border: activeCategory === cat.id ? 'none' : '1px solid var(--color-border)',
+              }}
+            >
+              {cat.name}
+            </button>
           ))}
         </div>
-      ) : (
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginBottom: 'var(--sp-base)' }}>
+          {filteredItems.length} {filteredItems.length === 1 ? 'dish' : 'dishes'}
+          {activeCategory && ` in "${categories.find(c => c.id === activeCategory)?.name}"`}
+        </p>
+      </div>
+
+      {/* Product grid */}
+      <div className="product-grid">
+        {filteredItems.map(item => (
+          <ProductCard key={item.id} item={item} />
+        ))}
+      </div>
+      {filteredItems.length === 0 && (
         <div className="empty-state">
           <div className="empty-state-icon">🍽️</div>
+          <div className="empty-state-title">{search ? 'No results' : 'Menu is empty'}</div>
           <p className="empty-state-text">
-            {search ? 'Không tìm thấy món nào phù hợp.' : 'Chưa có món nào trong thực đơn.'}
+            {search ? 'Try a different search term.' : 'Check back soon for new dishes.'}
           </p>
         </div>
       )}
+
+      <style jsx>{`::-webkit-scrollbar { height: 0; }`}</style>
     </div>
   );
 }
+
+const chipStyle = {
+  padding: '10px 18px',
+  borderRadius: 'var(--radius-full)',
+  fontSize: 'var(--text-sm)',
+  fontWeight: 500,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+  transition: 'all var(--transition-fast)',
+  fontFamily: 'var(--font-body)',
+  minHeight: '40px',
+};

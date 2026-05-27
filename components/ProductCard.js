@@ -2,7 +2,6 @@ import { useCart } from './CartContext';
 
 export default function ProductCard({ item }) {
   const { addItem, items } = useCart();
-
   const cartItem = items.find(i => i.id === item.id);
   const inCart = cartItem ? cartItem.quantity : 0;
 
@@ -11,26 +10,28 @@ export default function ProductCard({ item }) {
   };
 
   return (
-    <div className="card card-hover" style={{
-      width: '100%',
-      minHeight: '320px',
+    <div className="card card-elevated" style={{
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'hidden',
+      minHeight: '260px',
     }}>
       {/* Image */}
       <div style={{
         position: 'relative',
         width: '100%',
-        height: '200px',
+        paddingTop: '80%',
         overflow: 'hidden',
-        background: 'var(--off-white)',
+        background: 'var(--color-surface-hover)',
       }}>
         {item.image ? (
           <img
             src={item.image}
             alt={item.name}
+            loading="lazy"
             style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
@@ -38,72 +39,82 @@ export default function ProductCard({ item }) {
           />
         ) : (
           <div style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--lighter-gray)',
-            fontSize: '48px',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '40px',
+            color: 'var(--color-text-muted)',
           }}>
             🍜
           </div>
         )}
         {inCart > 0 && (
-          <span className="badge-discount" style={{
+          <span style={{
             position: 'absolute',
             top: '8px',
             right: '8px',
+            background: 'var(--color-primary)',
+            color: 'white',
+            fontSize: '11px',
+            fontWeight: 700,
+            padding: '4px 10px',
+            borderRadius: 'var(--radius-full)',
           }}>
-            {inCart} trong giỏ
+            {inCart} in cart
           </span>
         )}
       </div>
 
       {/* Content */}
-      <div style={{
-        padding: 'var(--sp-16)',
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-      }}>
-        <h3 style={{
-          fontSize: 'var(--fs-body-lg)',
-          fontWeight: 400,
-          color: 'var(--charcoal-black)',
-          marginBottom: 'var(--sp-4)',
-          lineHeight: 'var(--lh-body-lg)',
+      <div style={{ padding: 'var(--sp-md) var(--sp-base)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <h4 style={{
+          fontSize: 'var(--text-base)',
+          fontWeight: 500,
+          color: 'var(--color-text)',
+          marginBottom: '4px',
+          lineHeight: 1.3,
         }}>
           {item.name}
-        </h3>
-
+        </h4>
         {item.description && (
           <p style={{
-            fontSize: 'var(--fs-caption)',
-            color: 'var(--medium-gray)',
-            lineHeight: 'var(--lh-caption)',
-            marginBottom: 'var(--sp-8)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-secondary)',
+            marginBottom: 'var(--sp-sm)',
             flex: 1,
+            lineHeight: 1.4,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
           }}>
-            {item.description.length > 60 ? item.description.substring(0, 60) + '...' : item.description}
+            {item.description}
           </p>
         )}
-
-        <div className="flex-between" style={{ marginTop: 'auto' }}>
-          <span style={{
-            fontSize: 'var(--fs-body-lg)',
-            fontWeight: 700,
-            color: 'var(--brand-red)',
-          }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+          <span style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-primary)' }}>
             {formatPrice(item.price)}
           </span>
-
           <button
             onClick={() => addItem(item)}
-            className="btn btn-primary"
-            style={{ padding: '8px 16px', height: '36px', fontSize: '14px', minWidth: 'auto' }}
+            style={{
+              background: 'var(--color-primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-full)',
+              width: '32px',
+              height: '32px',
+              fontSize: '18px',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
+            }}
           >
-            + Thêm
+            +
           </button>
         </div>
       </div>

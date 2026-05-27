@@ -33,7 +33,7 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-    showToast('Đã thêm vào giỏ hàng', 'success');
+    showToast('Added to cart', 'success');
   }, [showToast]);
 
   const removeItem = useCallback((id) => {
