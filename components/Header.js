@@ -16,35 +16,24 @@ export default function Header() {
 
   return (
     <>
-      {/* Top header bar */}
-      <header className="top-header">
-        <Link href="/" style={{
-          fontFamily: 'var(--font-heading)',
-          fontSize: 'var(--text-lg)',
-          fontWeight: 700,
-          color: 'var(--color-primary)',
-          textDecoration: 'none',
-          letterSpacing: '-0.3px',
-        }}>
-          LaLa's
-        </Link>
-        <div style={{ flex: 1 }} />
+      <header className="header">
+        <Link href="/" className="header-logo" style={{ textDecoration: 'none' }}>LaLa's</Link>
+        <nav className="header-nav">
+          <Link href="/" className="header-link">Home</Link>
+          <Link href="/menu" className="header-link">Menu</Link>
+          <Link href="/cart" className="header-link" style={{ position: 'relative' }}>
+            Cart{totalItems > 0 && <span style={{ position: 'absolute', top: -2, right: -8, background: 'var(--accent)', color: 'white', width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{totalItems}</span>}
+          </Link>
+          <Link href="/tracking" className="header-link">Orders</Link>
+        </nav>
       </header>
 
-      {/* Bottom Navigation (mobile) */}
       <nav className="bottom-nav">
         {navItems.map(item => (
-          <Link
-            key={item.path}
-            href={item.path}
-            className={`bottom-nav-item${path === item.path ? ' active' : ''}`}
-            style={{ textDecoration: 'none', position: 'relative' }}
-          >
-            <span className="bottom-nav-icon">{item.icon}</span>
+          <Link key={item.path} href={item.path} className={`nav-item${path === item.path ? ' active' : ''}`} style={{ textDecoration: 'none', position: 'relative' }}>
+            <span className="nav-item-icon">{item.icon}</span>
             <span>{item.label}</span>
-            {item.badge > 0 && (
-              <span className="bottom-nav-badge">{item.badge}</span>
-            )}
+            {item.badge > 0 && <span className="nav-badge">{item.badge}</span>}
           </Link>
         ))}
       </nav>

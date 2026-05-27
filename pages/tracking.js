@@ -7,57 +7,27 @@ export default function Tracking() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    const trimmedCode = code.trim().toUpperCase();
-    const trimmedPhone = phone.trim();
-    if (!trimmedCode || !trimmedPhone) {
-      setError('Please enter both your order code and phone number.');
-      return;
-    }
-    if (!/^[0-9]{9,11}$/.test(trimmedPhone.replace(/\s/g, ''))) {
-      setError('Invalid phone number.');
-      return;
-    }
-    router.push(`/order/${trimmedCode}?phone=${encodeURIComponent(trimmedPhone)}`);
+    const c = code.trim().toUpperCase();
+    const p = phone.trim();
+    if (!c || !p) { setError('Please fill in both fields.'); return; }
+    if (!/^[0-9]{9,11}$/.test(p.replace(/\s/g, ''))) { setError('Invalid phone number.'); return; }
+    router.push(`/order/${c}?phone=${encodeURIComponent(p)}`);
   };
 
   return (
-    <div className="container" style={{ paddingTop: 'var(--sp-2xl)', paddingBottom: 'var(--sp-2xl)', maxWidth: '460px' }}>
-      <div style={{ textAlign: 'center', marginBottom: 'var(--sp-2xl)' }}>
-        <div style={{ fontSize: '56px', marginBottom: 'var(--sp-base)' }}>📦</div>
-        <h1 className="section-title" style={{ textAlign: 'center' }}>Track Order</h1>
-        <p style={{ fontSize: 'var(--text-base)', color: 'var(--color-text-secondary)' }}>
-          Enter your order code and phone number to check your order status.
-        </p>
+    <div className="container" style={{ paddingTop: 'var(--sp-3xl)', paddingBottom: 'var(--sp-3xl)', maxWidth: 440 }}>
+      <div className="text-center" style={{ marginBottom: 'var(--sp-2xl)' }}>
+        <div style={{ fontSize: 48, marginBottom: 'var(--sp-base)' }}>📦</div>
+        <h2>Track Your Order</h2>
+        <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>Enter your order code and phone number.</p>
       </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="code">Order Code</label>
-          <input id="code" type="text" className="form-input"
-            placeholder="e.g. ABC12345" value={code}
-            onChange={e => { setCode(e.target.value); setError(''); }}
-            style={{ textTransform: 'uppercase' }} />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label" htmlFor="phone">Phone Number</label>
-          <input id="phone" type="tel" className="form-input"
-            placeholder="Phone used when ordering" value={phone}
-            onChange={e => { setPhone(e.target.value); setError(''); }} />
-        </div>
-
-        {error && (
-          <div style={{ color: 'var(--color-error)', fontSize: 'var(--text-sm)', marginBottom: 'var(--sp-base)',
-            padding: 'var(--sp-md)', background: 'rgba(209,67,67,0.06)', borderRadius: 'var(--radius-md)' }}>
-            {error}
-          </div>
-        )}
-
-        <button type="submit" className="btn btn-primary btn-block btn-lg">
-          Track Order
-        </button>
+      <form onSubmit={submit}>
+        <div style={{ marginBottom: 'var(--sp-base)' }}><label className="label">Order Code</label><input className="input" value={code} onChange={e => { setCode(e.target.value); setError(''); }} placeholder="e.g. AB12CD34" style={{ textTransform: 'uppercase' }} /></div>
+        <div style={{ marginBottom: 'var(--sp-lg)' }}><label className="label">Phone Number</label><input className="input" type="tel" value={phone} onChange={e => { setPhone(e.target.value); setError(''); }} placeholder="Phone used when ordering" /></div>
+        {error && <div style={{ color: 'var(--error)', fontSize: 'var(--text-sm)', marginBottom: 'var(--sp-base)', padding: 'var(--sp-md)', background: 'rgba(197,85,74,0.06)', borderRadius: 'var(--radius-md)' }}>{error}</div>}
+        <button className="btn btn-primary btn-block btn-lg">Track Order</button>
       </form>
     </div>
   );

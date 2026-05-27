@@ -78,21 +78,8 @@ app.prepare().then(() => {
     console.log(`> Website ready on http://localhost:${port}`);
   });
 
-  // Start Telegram Bots
-  const adminToken = process.env.ADMIN_BOT_TOKEN;
+  // Start Order Telegram Bot (for receiving order notifications)
   const orderToken = process.env.ORDER_BOT_TOKEN;
-
-  if (adminToken && adminToken !== 'your_admin_bot_token_here') {
-    const { startAdminBot } = require('./lib/telegram-admin');
-    const adminBot = startAdminBot(adminToken);
-    adminBot.start({
-      onStart: (botInfo) => {
-        console.log(`> Admin Bot @${botInfo.username} started`);
-      },
-    });
-  } else {
-    console.log('> Admin Bot: NOT STARTED (set ADMIN_BOT_TOKEN in .env.local)');
-  }
 
   if (orderToken && orderToken !== 'your_order_bot_token_here') {
     const { startOrderBot } = require('./lib/telegram-order');

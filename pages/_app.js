@@ -7,10 +7,10 @@ export default function App({ Component, pageProps }) {
   return (
     <CartProvider>
       <Head>
-        <title>LaLa's Take Away — Authentic Vietnamese Cuisine</title>
-        <meta name="description" content="LaLa's Take Away — Order authentic Vietnamese food. No account needed. Cash on delivery." />
+        <title>LaLa's Take Away — Fresh Vietnamese Cuisine</title>
+        <meta name="description" content="Order authentic Vietnamese food for takeaway. Fresh ingredients, bold flavors. No account needed. Cash on delivery." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-        <meta name="theme-color" content="#8B1A2B" />
+        <meta name="theme-color" content="#2C4A3A" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="LaLa's" />

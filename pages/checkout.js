@@ -9,132 +9,53 @@ export default function Checkout() {
   const [form, setForm] = useState({ customer_name: '', phone: '', address: '', notes: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('vi-VN').format(price) + '₫';
-  };
+  const fmt = (p) => new Intl.NumberFormat('vi-VN').format(p) + '₫';
 
   const validate = () => {
-    const errs = {};
-    if (!form.customer_name.trim()) errs.customer_name = 'Please enter your name';
-    if (!form.phone.trim()) errs.phone = 'Please enter your phone number';
-    else if (!/^[0-9]{9,11}$/.test(form.phone.replace(/\s/g, '')))
-      errs.phone = 'Invalid phone number';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const e = {};
+    if (!form.customer_name.trim()) e.customer_name = 'Required';
+    if (!form.phone.trim()) e.phone = 'Required';
+    else if (!/^[0-9]{9,11}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Invalid';
+    setErrors(e);
+    return !Object.keys(e).length;
   };
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!validate() || items.length === 0) return;
-
     setSubmitting(true);
     try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          items: items.map(i => ({
-            menu_item_id: i.id, name: i.name,
-            quantity: i.quantity, price: i.price,
-          })),
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        clearCart();
-        router.push(`/order/${data.tracking_code}?phone=${encodeURIComponent(form.phone)}`);
-      } else {
-        showToast(data.error || 'Order failed. Please try again.', 'error');
-      }
-    } catch (err) {
-      showToast('Connection error. Please try again.', 'error');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleChange = (field) => (e) => {
-    setForm(prev => ({ ...prev, [field]: e.target.value }));
-    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
+      const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, items: items.map(i => ({ menu_item_id: i.id, name: i.name, quantity: i.quantity, price: i.price })) }) });
+      const d = await res.json();
+      if (res.ok) { clearCart(); router.push(`/order/${d.tracking_code}?phone=${encodeURIComponent(form.phone)}`); }
+      else showToast(d.error || 'Failed', 'error');
+    } catch (err) { showToast('Connection error', 'error'); }
+    setSubmitting(false);
   };
 
   if (items.length === 0 && !submitting) {
-    return (
-      <div className="container" style={{ paddingTop: 'var(--sp-2xl)', paddingBottom: 'var(--sp-2xl)' }}>
-        <div className="empty-state">
-          <div className="empty-state-icon">🛒</div>
-          <div className="empty-state-title">Cart is empty</div>
-          <p className="empty-state-text">Add items to your cart before checking out.</p>
-          <Link href="/menu" className="btn btn-primary">Browse Menu</Link>
-        </div>
-      </div>
-    );
+    return <div className="container" style={{ paddingTop: 'var(--sp-3xl)' }}><div className="empty-state"><div className="empty-icon">🛒</div><div className="empty-title">Cart is Empty</div><p className="empty-text">Add items before checkout.</p><Link href="/menu" className="btn btn-primary">Browse Menu</Link></div></div>;
   }
 
   return (
-    <div className="container" style={{ paddingTop: 'var(--sp-lg)', paddingBottom: 'var(--sp-2xl)', maxWidth: '600px' }}>
-      <h1 className="section-title">Checkout</h1>
-
-      {/* Order Summary */}
+    <div className="container" style={{ paddingTop: 'var(--sp-xl)', paddingBottom: 'var(--sp-3xl)', maxWidth: 600 }}>
+      <h2 style={{ marginBottom: 'var(--sp-xl)' }}>Checkout</h2>
       <div className="card" style={{ padding: 'var(--sp-lg)', marginBottom: 'var(--sp-xl)' }}>
         <h4 style={{ marginBottom: 'var(--sp-md)' }}>Order Summary</h4>
         <div className="flex-col gap-sm">
-          {items.map(item => (
-            <div key={item.id} className="flex-between" style={{ fontSize: 'var(--text-sm)' }}>
-              <span>{item.quantity}x {item.name}</span>
-              <span style={{ fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
-            </div>
-          ))}
+          {items.map(i => <div key={i.id} className="flex justify-between" style={{ fontSize: 'var(--text-sm)' }}><span>{i.quantity}x {i.name}</span><span>{fmt(i.price * i.quantity)}</span></div>)}
         </div>
-        <div style={{ borderTop: '1px solid var(--color-border)', marginTop: 'var(--sp-md)', paddingTop: 'var(--sp-md)' }}>
-          <div className="flex-between">
-            <span style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Total</span>
-            <span style={{ fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
-          </div>
+        <div style={{ borderTop: '1px solid var(--border)', marginTop: 'var(--sp-md)', paddingTop: 'var(--sp-md)', display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontWeight: 600 }}>Total</span><span style={{ fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--primary)' }}>{fmt(totalPrice)}</span>
         </div>
       </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="name">Full Name *</label>
-          <input id="name" type="text" className={`form-input ${errors.customer_name ? 'error' : ''}`}
-            placeholder="John Doe" value={form.customer_name} onChange={handleChange('customer_name')} />
-          {errors.customer_name && <span style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.customer_name}</span>}
-        </div>
-
-        <div className="form-group">
-          <label className="form-label" htmlFor="phone">Phone Number *</label>
-          <input id="phone" type="tel" className={`form-input ${errors.phone ? 'error' : ''}`}
-            placeholder="0900 123 456" value={form.phone} onChange={handleChange('phone')} />
-          {errors.phone && <span style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.phone}</span>}
-        </div>
-
-        <div className="form-group">
-          <label className="form-label" htmlFor="address">Delivery Address</label>
-          <input id="address" type="text" className="form-input"
-            placeholder="123 Main Street, District 1" value={form.address} onChange={handleChange('address')} />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label" htmlFor="notes">Notes</label>
-          <textarea id="notes" className="form-input"
-            placeholder="Allergies, special requests..." value={form.notes} onChange={handleChange('notes')} rows={3} />
-        </div>
-
-        <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={submitting}>
-          {submitting ? (
-            <><span className="spinner" style={{ width: '18px', height: '18px', borderWidth: '2px', borderTopColor: 'white' }} /> Processing...</>
-          ) : (
-            `Place Order — ${formatPrice(totalPrice)}`
-          )}
-        </button>
-
-        <p style={{ textAlign: 'center', fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--sp-base)' }}>
-          <strong>Cash on delivery.</strong> No payment needed upfront.
-        </p>
+      <form onSubmit={submit}>
+        <div style={{ marginBottom: 'var(--sp-base)' }}><label className="label">Full Name *</label><input className={`input${errors.customer_name ? ' error' : ''}`} style={errors.customer_name ? { borderColor: 'var(--error)' } : undefined} value={form.customer_name} onChange={e => setForm(f => ({ ...f, customer_name: e.target.value }))} placeholder="Your name" /></div>
+        <div style={{ marginBottom: 'var(--sp-base)' }}><label className="label">Phone Number *</label><input className="input" style={errors.phone ? { borderColor: 'var(--error)' } : undefined} type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="0900 123 456" /></div>
+        <div style={{ marginBottom: 'var(--sp-base)' }}><label className="label">Delivery Address</label><input className="input" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="123 Main St, District 1" /></div>
+        <div style={{ marginBottom: 'var(--sp-xl)' }}><label className="label">Notes</label><textarea className="input" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Allergies, special requests..." /></div>
+        <button className="btn btn-primary btn-block btn-lg" disabled={submitting}>{submitting ? 'Processing...' : `Place Order — ${fmt(totalPrice)}`}</button>
+        <p className="text-center" style={{ marginTop: 'var(--sp-base)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}><strong>Cash on delivery.</strong> No payment needed now.</p>
       </form>
     </div>
   );

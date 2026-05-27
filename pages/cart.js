@@ -3,86 +3,48 @@ import Link from 'next/link';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
+  const fmt = (p) => new Intl.NumberFormat('vi-VN').format(p) + '₫';
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('vi-VN').format(price) + '₫';
-  };
-
-  return (
-    <div className="container" style={{ paddingTop: 'var(--sp-lg)', paddingBottom: 'var(--sp-2xl)' }}>
-      <h1 className="section-title">Your Cart</h1>
-
-      {items.length === 0 ? (
+  if (items.length === 0) {
+    return (
+      <div className="container" style={{ paddingTop: 'var(--sp-3xl)' }}>
         <div className="empty-state">
-          <div className="empty-state-icon">🛒</div>
-          <div className="empty-state-title">Cart is empty</div>
-          <p className="empty-state-text">Browse our menu and add some delicious dishes.</p>
+          <div className="empty-icon">🛒</div>
+          <div className="empty-title">Your Cart is Empty</div>
+          <p className="empty-text">Discover our menu and add your favorites.</p>
           <Link href="/menu" className="btn btn-primary">Browse Menu</Link>
         </div>
-      ) : (
-        <>
-          <div className="flex-col gap-base" style={{ marginBottom: 'var(--sp-xl)' }}>
-            {items.map(item => (
-              <div key={item.id} className="card" style={{
-                display: 'flex',
-                gap: 'var(--sp-md)',
-                padding: 'var(--sp-md)',
-              }}>
-                <div style={{
-                  width: '72px', height: '72px', borderRadius: 'var(--radius-md)',
-                  overflow: 'hidden', flexShrink: 0, background: 'var(--color-surface-hover)',
-                }}>
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>🍜</div>
-                  )}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h4 style={{ fontSize: 'var(--text-base)', fontWeight: 500, marginBottom: '2px' }}>{item.name}</h4>
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-primary)', fontWeight: 600 }}>
-                    {formatPrice(item.price)}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <button onClick={() => removeItem(item.id)} style={{
-                    background: 'none', border: 'none', color: 'var(--color-text-muted)',
-                    fontSize: '16px', padding: '4px', cursor: 'pointer',
-                  }}>✕</button>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={qtyBtnStyle}>−</button>
-                    <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, minWidth: '24px', textAlign: 'center' }}>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={qtyBtnStyle}>+</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      </div>
+    );
+  }
 
-          <div className="card" style={{ padding: 'var(--sp-lg)', marginBottom: 'var(--sp-lg)' }}>
-            <div className="flex-between" style={{ marginBottom: 'var(--sp-sm)' }}>
-              <span style={{ fontSize: 'var(--text-base)', color: 'var(--color-text-secondary)' }}>Subtotal</span>
-              <span style={{ fontSize: 'var(--text-base)', fontWeight: 500 }}>{formatPrice(totalPrice)}</span>
+  return (
+    <div className="container" style={{ paddingTop: 'var(--sp-xl)', paddingBottom: 'var(--sp-3xl)', maxWidth: 640 }}>
+      <h2 style={{ marginBottom: 'var(--sp-xl)' }}>Your Cart</h2>
+      <div className="flex-col gap-base" style={{ marginBottom: 'var(--sp-xl)' }}>
+        {items.map(item => (
+          <div key={item.id} className="card" style={{ padding: 'var(--sp-base)', display: 'flex', gap: 'var(--sp-base)', alignItems: 'center' }}>
+            <div style={{ width: 64, height: 64, borderRadius: 'var(--radius-md)', overflow: 'hidden', flexShrink: 0, background: 'var(--bg-warm)' }}>
+              {item.image ? <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div className="flex items-center justify-center" style={{ width: '100%', height: '100%', fontSize: 24 }}>🍜</div>}
             </div>
-            <div className="flex-between">
-              <span style={{ fontSize: 'var(--text-md)', fontWeight: 600 }}>Total</span>
-              <span style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
+            <div style={{ flex: 1 }}>
+              <h4 style={{ fontSize: 'var(--text-base)', fontWeight: 500 }}>{item.name}</h4>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--primary)', fontWeight: 600 }}>{fmt(item.price)}</span>
             </div>
+            <div className="flex items-center gap-sm">
+              <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid var(--border)', background: 'white', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>−</button>
+              <span style={{ fontWeight: 600, minWidth: 20, textAlign: 'center' }}>{item.quantity}</span>
+              <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid var(--border)', background: 'white', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
+            </div>
+            <button onClick={() => removeItem(item.id)} style={{ color: 'var(--text-muted)', padding: 4, cursor: 'pointer', background: 'none', border: 'none', fontSize: 16 }}>✕</button>
           </div>
-
-          <Link href="/checkout" className="btn btn-primary btn-block btn-lg">
-            Proceed to Checkout — {formatPrice(totalPrice)}
-          </Link>
-        </>
-      )}
+        ))}
+      </div>
+      <div className="card" style={{ padding: 'var(--sp-xl)', marginBottom: 'var(--sp-lg)' }}>
+        <div className="flex justify-between" style={{ marginBottom: 8 }}><span style={{ color: 'var(--text-secondary)' }}>Subtotal</span><span>{fmt(totalPrice)}</span></div>
+        <div className="flex justify-between" style={{ fontSize: 'var(--text-lg)', fontWeight: 700 }}><span>Total</span><span style={{ color: 'var(--primary)' }}>{fmt(totalPrice)}</span></div>
+      </div>
+      <Link href="/checkout" className="btn btn-primary btn-block btn-lg">Proceed to Checkout</Link>
     </div>
   );
 }
-
-const qtyBtnStyle = {
-  width: '32px', height: '32px', borderRadius: 'var(--radius-sm)',
-  border: '1.5px solid var(--color-border)', background: 'var(--color-surface)',
-  fontSize: '16px', fontWeight: 600, cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  color: 'var(--color-text)',
-};
